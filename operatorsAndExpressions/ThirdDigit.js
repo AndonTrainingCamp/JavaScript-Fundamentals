@@ -3,15 +3,12 @@
 'use strict';
 
 function solve(args) {
-    let digits;
-
+    let digits,
+        digit;
     digits = args[0];
     if (digits.length >= 3) {
-        if (+(digits[digits.length - 3]) === 7) {
-            return 'true';
-        } else {
-            return 'false ' + digits[digits.length - 3];
-        }
+        digit = +(digits[digits.length - 3]);
+        return digit === 7 ? 'true' : 'false ' + digit;
     } else {
         return 'false 0';
     }
