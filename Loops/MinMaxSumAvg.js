@@ -1,7 +1,7 @@
 /*jslint devel: true */
 /*jslint es6 */
 'use strict';
-solve(['2', '5', '1']);
+
 function solve(args) {
     let min = +(args[0]),
         max = +(args[0]),
