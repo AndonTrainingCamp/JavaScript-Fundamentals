@@ -10,8 +10,10 @@ solve(inputArr, inputArr2);
 function solve(arr, arr2) {
     if (arr.length < arr2.length){
         console.log('<');
-    } else {
+        return;
+    } else if (arr.length > arr2.length){
         console.log('>');
+        return;
     }
     let i;
     for (i = 0; i < arr.length; i++) {
