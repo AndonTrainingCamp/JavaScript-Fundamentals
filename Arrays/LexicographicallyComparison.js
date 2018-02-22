@@ -18,11 +18,12 @@ function solve(arr, arr2) {
     let i;
     for (i = 0; i < arr.length; i++) {
         if (arr[i] !== arr2[i]) {
-            console.log( 'Not equal! At array index[' + i + ']: ' +  arr[i] + ' != ' + arr2[i]);
             if (arr[i] < arr2[i]) {
                 console.log('<');
+                return;
             } else {
                 console.log('>');
+                return;
             }
         }
     }
