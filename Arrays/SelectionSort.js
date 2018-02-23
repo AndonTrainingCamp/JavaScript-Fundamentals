@@ -25,4 +25,5 @@ function solve(args) {
         check = 0;
         console.log(args[j]);
     }
+    console.log(args[args.length-1]);
 }
