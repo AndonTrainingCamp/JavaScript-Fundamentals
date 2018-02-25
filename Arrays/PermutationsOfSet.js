@@ -14,11 +14,11 @@ function solve(num) {
         arrNums[i] = i + 1;
         line[i] = arrNums[i];
     }
-    for (j = 0; j < numFact / (num - 1); j++) {
+    for (j = 0; j < numFact / (num - 1); j++) {         //Permutation algorithm
         for (k = 0; k < num - 1; k++) {
             line[k] = arrNums[k + 1];
             line[k + 1] = arrNums[k];
-            console.log('{', line.join(', '), '}');
+            console.log('{', line.join(', '), '}');     //Shows a combination 
                 for (m = 0; m < num; m++) {
                     arrNums[m] = line[m];
                 }
