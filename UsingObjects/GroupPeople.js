@@ -32,7 +32,7 @@ function groupByAge(people) {
         }
         nextAge = ageArr[j + 1];
     }
-    let counter = 0,
+    let sameAge = 0,
         hasArr = false,
         k;
     for (i = 0; i < ageArr.length;) {
@@ -44,12 +44,12 @@ function groupByAge(people) {
                 }
                 grouped[ageArr[i]][k] = people[j];
                 k++;
-                counter++;
+                sameAge++;
             }
         }
         hasArr = false;
-        i+=counter;
-        counter = 0;
+        i+=sameAge;
+        sameAge = 0;
     }
     return grouped;
 }
