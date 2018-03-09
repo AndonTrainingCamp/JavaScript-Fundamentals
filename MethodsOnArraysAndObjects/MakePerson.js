@@ -26,7 +26,6 @@ function makePerson(personInput) {
     for (i = 0; i < personInput.length; i++) {
         personArr[i] = new Person(personInput[i][0], personInput[i][1], personInput[i][2], personInput[i][3]);
     }
-    console.log(personArr);
     return personArr;
 }
-makePerson(personInput);
+console.log(makePerson(personInput));
