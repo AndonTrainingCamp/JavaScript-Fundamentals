@@ -12,8 +12,7 @@ const peopleInput = [
 ];
 
 function groupPerson(person) {
-    let grouped = {},
-        sorted;
+    let sorted;
     sorted = person.sort((a, b) => {
         let name1 = a.firstname,
             name2 = b.firstname;
@@ -25,16 +24,15 @@ function groupPerson(person) {
         };
         return 0;
     });
+    
     const reducer = (result, currValue, index, arr) => {
         let letter = arr[index].firstname[0];
-        result = arr[index];
-        if (!Array.isArray(grouped[letter])) {
-            grouped[letter] = [];
+        if (!Array.isArray(result[letter])) {
+            result[letter] = [];
         }
-        grouped[letter].push(result);
-        return
+        result[letter].push(arr[index]);
+        return result;
     };
-    sorted.reduce(reducer, 0);
-    return grouped;
+    return sorted.reduce(reducer, {});
 }
 console.log(groupPerson(peopleInput));
