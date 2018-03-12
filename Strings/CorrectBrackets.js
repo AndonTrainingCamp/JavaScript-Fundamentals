@@ -5,7 +5,7 @@
 const input = ['(()))('];
 
 function checkBrackets(stringArr) {
-    let expression = stringArr[0];
+    const expression = stringArr[0];
     let openBra = 0,
         i;
     for (i = 0; i < expression.length; i++) {
