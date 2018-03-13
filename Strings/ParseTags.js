@@ -5,9 +5,10 @@
 const input = ['<upcase>We are <orgcase>liViNg</orgcase> in a <lowcase><upcase>yellow <lowcase>mother <lowcase>big zombie</lowcase> gender</lowcase> submarine</upcase></lowcase>. We <upcase><orgcase>doN\'t</orgcase> have <lowcase>ANYTHING</lowcase></upcase> else.</upcase>'];
 
 function parseTags(inputArr) {
-    let inputText = inputArr[0],
-        exclude = /(<\w*>)(.*?)(<\w*>)/,
-        regExTest = /(<\w*>)/; 
+    const exclude = /(<\w*>)(.*?)(<\w*>)/;
+    const regExTest = /(<\w*>)/;
+    let inputText = inputArr[0];
+    
     function replacer(match, p1, p2, p3, startInd, text) {
         if (exclude.test(match)) {
             match = match.slice(1);
@@ -26,6 +27,7 @@ function parseTags(inputArr) {
     } while (regExTest.test(inputText)) {
         inputText = inputText.replace(/(<\w*>)(.*?)(<\/\w*>)/g, replacer);
     }
+    
     return inputText;
 }
 console.log(parseTags(input));
