@@ -8,7 +8,6 @@ function parseTags(inputArr) {
     const exclude = /(<\w*>)(.*?)(<\w*>)/;
     const regExTest = /(<\w*>)/;
     let inputText = inputArr[0];
-    
     function replacer(match, p1, p2, p3, startInd, text) {
         if (exclude.test(match)) {
             match = match.slice(1);
@@ -27,7 +26,6 @@ function parseTags(inputArr) {
     } while (regExTest.test(inputText)) {
         inputText = inputText.replace(/(<\w*>)(.*?)(<\/\w*>)/g, replacer);
     }
-    
     return inputText;
 }
 console.log(parseTags(input));
