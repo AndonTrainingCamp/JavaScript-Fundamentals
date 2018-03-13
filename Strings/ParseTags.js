@@ -2,7 +2,7 @@
 /*jslint es6 */
 'use strict';
 
-const input = ['<upcase>We are <orgcase>liViNg</orgcase> in a <lowcase><upcase>yellow <lowcase>mother <lowcase>big zombie</lowcase> fucker</lowcase> submarine</upcase></lowcase>. We <upcase><orgcase>doN\'t</orgcase> have <lowcase>ANYTHING</lowcase></upcase> else.</upcase>'];
+const input = ['<upcase>We are <orgcase>liViNg</orgcase> in a <lowcase><upcase>yellow <lowcase>mother <lowcase>big zombie</lowcase> gender</lowcase> submarine</upcase></lowcase>. We <upcase><orgcase>doN\'t</orgcase> have <lowcase>ANYTHING</lowcase></upcase> else.</upcase>'];
 
 function parseTags(inputArr) {
     let inputText = inputArr[0],
