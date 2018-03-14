@@ -23,9 +23,7 @@ function parseTags(inputArr) {
     }
     do {
         inputText = inputText.replace(/(<\w*>)(.*?)(<\/\w*>)/g, replacer);
-    } while (regExTest.test(inputText)) {
-        inputText = inputText.replace(/(<\w*>)(.*?)(<\/\w*>)/g, replacer);
-    }
+    } while (regExTest.test(inputText));
     return inputText;
 }
 console.log(parseTags(input));
