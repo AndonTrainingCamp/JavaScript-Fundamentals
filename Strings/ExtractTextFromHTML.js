@@ -21,12 +21,7 @@ function parseTags(inputArr) {
     const exclude = /(<\w*>)(.*?)(<\w*>)/,
           regExTest = /(<\w*>)/;
     for (let el in inputArr) {
-        for (let el2 in inputArr[el]) {
-            if (inputArr[el][el2] > ' ') {
-                inputArr[el] = inputArr[el].slice(el2);
-                break;
-            }
-        }
+	inputArr[el] = inputArr[el].trim();
     }
     let inputText = inputArr.join('');
     function replacer(match, p1, p2, p3, startInd, text) {
