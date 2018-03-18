@@ -27,7 +27,7 @@ String.prototype.htmlBind = function (dataObj) {
     return result;
 }
 
-solve(input);
+console.log(solve(input));
 
 function solve(inputArr) {
     let data = JSON.parse(inputArr[0]),
