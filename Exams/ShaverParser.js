@@ -4,7 +4,7 @@
 
 var fs = require("fs");
 var text = fs.readFileSync("./inputShaver.txt", "utf-8");
-var arrInput = text.split("\r\n");
+var arrInput = text.split("\n");
 console.log(solve(arrInput));
 
 function solve(arrInput) {
@@ -19,7 +19,7 @@ function solve(arrInput) {
     }
     let htmlStartIndex;
     arrInput.forEach((element, index) => {
-        if (element.indexOf('<!DOCTYPE html>') !== -1) {
+        if (element.toLowerCase() === '<!DOCTYPE html>'.toLowerCase()) {
             htmlStartIndex = index;
         }
     });
@@ -29,6 +29,7 @@ function solve(arrInput) {
     for (let i = 0; i < arrInput.length - sections.length - keysNum - 2; i++) {
         html[i] = arrInput[htmlStartIndex + i];
     }
+    html = html.join('');
     resultHtml = html.concat();
     // Prepare sections: sectionsName[0] is relevant to sectionsContent = [0]
     let sectionsName = [],
@@ -46,21 +47,20 @@ function solve(arrInput) {
             currSectionContent = [];
         }
     });
-    // Search and replace @renderSection in html
-    html.forEach((el, index) => {
-        let forReplaceIndex = index,
-            indexOf = el.indexOf('@renderSection("');
-        if (indexOf !== -1) {
-            let indexOfName = indexOf + '@renderSection("'.length,
-                currentName = el.slice(indexOfName, el.length - 2);
+    // Render @renderSection's in the html
+    let nextIndex = 0; // From which to start the search
+    while (resultHtml.indexOf('@renderSection') !== -1) {
+        let indexOfsection = html.indexOf('@renderSection', nextIndex),
+            indexOfClosedBra = html.indexOf(')', indexOfsection);
+        if (indexOfsection !== -1) {
             sectionsName.forEach((el, index) => {
-                if (el === currentName) {
-                    resultHtml.splice(forReplaceIndex, 1, sectionsContent[index]);
+                if (html.indexOf(el, indexOfsection) !== -1 && html.indexOf(el, indexOfsection) < indexOfClosedBra) {
+                    let toReplace = '@renderSection("' + el + '")';
+                    resultHtml = resultHtml.replace(toReplace, sectionsContent[index]);
                 }
             });
         }
-    });
-    // console.log(sectionsName);
-    // console.log(sectionsContent);
+        nextIndex = indexOfsection + 1; // Evalute for next search of @renderSection
+    }
     return resultHtml;
 }
