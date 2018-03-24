@@ -20,7 +20,7 @@ function solve(arrInput) {
     }
     let htmlStartIndex;
     arrInput.forEach((element, index) => {
-        if (element.toLowerCase() === '<!DOCTYPE html>'.toLowerCase()) {
+        if (element.indexOf('<!DOCTYPE html>') !== -1) {
             htmlStartIndex = index;
         }
     });
