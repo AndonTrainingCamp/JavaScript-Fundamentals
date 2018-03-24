@@ -2,9 +2,14 @@
 /*jslint es6 */
 'use strict';
 
-var fs = require("fs");
-var text = fs.readFileSync("./inputShaver.txt", "utf-8");
-var arrInput = text.split("\n"); // If the input.txt is made with Windows => change to text.split("\r\n")
+let fs = require("fs"),
+    text = fs.readFileSync("./inputShaver.txt", "utf-8"),
+    arrInput = [];
+if (text.indexOf('\r\n') !== -1) {
+    arrInput = text.split("\r\n");
+} else {
+    arrInput = text.split("\n");
+}
 console.log(solve(arrInput));
 
 function solve(arrInput) {
