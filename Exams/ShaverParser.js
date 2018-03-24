@@ -5,7 +5,6 @@
 var fs = require("fs");
 var text = fs.readFileSync("./inputShaver.txt", "utf-8");
 var arrInput = text.split("\n");
-arrInput = arrInput.slice(0, arrInput.length - 1);
 console.log(solve(arrInput));
 
 function solve(arrInput) {
