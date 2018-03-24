@@ -1,4 +1,4 @@
-﻿6
+6
 title:Telerik Academy
 showSubtitle:true
 subTitle:Free training
