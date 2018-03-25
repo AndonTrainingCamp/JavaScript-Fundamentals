@@ -28,7 +28,7 @@ function solve(arrInput) {
             htmlStartIndex = index;
         }
     });
-    for (let i = 0, j = 2 + keysNum; i < htmlStartIndex - keysNum - 2; i++, j++) {
+    for (let i = 0, j = 2 + keysNum; i < htmlStartIndex - keysNum - 2; i++ , j++) {
         sections[i] = arrInput[j];
     }
     for (let i = 0; i < arrInput.length - sections.length - keysNum - 2; i++) {
@@ -36,44 +36,7 @@ function solve(arrInput) {
     }
     html = html.join('');
     resultHtml = html.concat();
-    // II. Separate keys: keyName[0] is relevant to keyValue[0]
-    let keyName = [],
-        keyValue = []; // Value can be string, boolean or array
-    keys.forEach((el, index) => {
-        let currKeyValue,
-            currIndex = el.indexOf(':');
-        if (currIndex !== -1) {
-            keyName.push(el.slice(0, currIndex)); // Left part :
-            currKeyValue = el.slice(currIndex + 1); // : Right part
-            if (currKeyValue.indexOf(',') !== -1) {
-                let arr = [],
-                    currStartIndex = 0;
-                    currIndexComa = currKeyValue.indexOf(','),
-                    currValueArr;
-                    while (currIndexComa !== -1) {
-                        currValueArr = currKeyValue.slice(currStartIndex, currIndexComa);
-                        if () { // Check what type is the value (string or numering)
-
-                        }
-                        arr.push(currValueArr);
-                        currStartIndex = currIndexComa + 1;
-                        currIndexComa = currKeyValue.indexOf(',');
-                    }
-                keyValue.push(arr);
-            } else if (currKeyValue.indexOf('true') !== -1 || currKeyValue.indexOf('false') !== -1) {
-                if (currKeyValue.indexOf('true') !== -1) {
-                    currKeyValue = true;
-                    keyValue.push(currKeyValue);
-                } else {
-                    currKeyValue = false;
-                    keyValue.push(currKeyValue);
-                }
-            } else {
-                keyValue.push(currKeyValue);
-            }
-        }
-    });
-    // III. Separate sections: sectionsName[0] is relevant to sectionsContent = [0]
+    // II. Separate sections: sectionsName[0] is relevant to sectionsContent = [0]
     let sectionsName = [],
         sectionsContent = [],
         currSectionContent = [];
@@ -89,7 +52,7 @@ function solve(arrInput) {
             currSectionContent = [];
         }
     });
-    // IV. Render @renderSection's in the html
+    // III. Render @renderSection's in the html
     let nextIndex = 0; // From which to start the search
     while (resultHtml.indexOf('@renderSection') !== -1) {
         let indexOfsection = html.indexOf('@renderSection', nextIndex),
@@ -104,7 +67,53 @@ function solve(arrInput) {
         }
         nextIndex = indexOfsection + 1; // Evalute for next search of @renderSection
     }
+    // IV. Separate keys: keyName[0] is relevant to keyValue[0]
+    let keyName = [], // (Left part :) Ex -> title:Telerik Academy
+        keyValue = []; // Values can be string, boolean or array, (: Right part)
+    keys.forEach((el, index) => {
+        let currKeyValue,
+            currIndex = el.indexOf(':');
+        if (currIndex !== -1) {
+            keyName.push(el.slice(0, currIndex)); // Left part :
+            currKeyValue = el.slice(currIndex + 1); // : Right part
+            if (currKeyValue.indexOf(',') !== -1) { // If coma is found, then there is an array
+                let arr = [],
+                    currBeginIndex = 0,
+                    currIndexComa = currKeyValue.indexOf(','), // Index of the first coma
+                    currValueArr;
+                while (currIndexComa !== -1) {
+                    currValueArr = currKeyValue.slice(currBeginIndex, currIndexComa);
+                    if (!isNaN(currValueArr)) { // Check what type is the value (string or numering)
+                        currValueArr = +(currValueArr);
+                    }
+                    arr.push(currValueArr);
+                    currBeginIndex = currIndexComa + 1;
+                    currIndexComa = currKeyValue.indexOf(',', currIndexComa + 1);
+                    if (currIndexComa === -1) {
+                        currValueArr = currKeyValue.slice(currBeginIndex);
+                        if (!isNaN(currValueArr)) { // Check what type is the value (string or numering)
+                            currValueArr = +(currValueArr);
+                        }
+                        arr.push(currValueArr);
+                    }
+                }
+                keyValue.push(arr);
+            } else if (currKeyValue.indexOf('true') !== -1 || currKeyValue.indexOf('false') !== -1) { // If boolean is found for value
+                if (currKeyValue.indexOf('true') !== -1) {
+                    currKeyValue = true;
+                    keyValue.push(currKeyValue);
+                } else {    // For string values
+                    currKeyValue = false;
+                    keyValue.push(currKeyValue);
+                }
+            } else {
+                keyValue.push(currKeyValue);
+            }
+        }
+    });
     // V. Render non-condition and non-loop statements
     
+    console.log(keyName);
+    console.log(keyValue);
     return resultHtml;
 }
