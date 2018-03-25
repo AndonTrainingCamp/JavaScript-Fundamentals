@@ -16,8 +16,7 @@ function solve(arrInput) {
     let keysNum = +(arrInput[0]),
         keys = [], // All keys
         sections = [], // All sections
-        html = [], // Raw html with Shaver view
-        resultHtml; // Changes after each render
+        html = []; // Raw html with Shaver view
     // I. Placing the input data in 3 parts: keys, sections and html arrays
     for (let i = 0; i < keysNum; i++) {
         keys[i] = arrInput[i + 1];
@@ -35,39 +34,7 @@ function solve(arrInput) {
         html[i] = arrInput[htmlStartIndex + i];
     }
     html = html.join('');
-    resultHtml = html.concat();
-    // II. Separate sections: sectionsName[0] is relevant to sectionsContent = [0]
-    let sectionsName = [],
-        sectionsContent = [],
-        currSectionContent = [];
-    sections.forEach((el, index) => {
-        let indexInEl = el.indexOf('@section ');
-        if (indexInEl !== -1) {
-            let name = el.slice('@section '.length, el.length - 2)
-            sectionsName.push(name);
-        } else if (el.indexOf('}') === -1) {
-            currSectionContent.push(el);
-        } else {
-            sectionsContent.push(currSectionContent.join(''));
-            currSectionContent = [];
-        }
-    });
-    // III. Render @renderSection's in the html
-    let nextIndex = 0; // From which to start the search
-    while (resultHtml.indexOf('@renderSection') !== -1) {
-        let indexOfsection = html.indexOf('@renderSection', nextIndex),
-            indexOfClosedBra = html.indexOf(')', indexOfsection);
-        if (indexOfsection !== -1) {
-            sectionsName.forEach((el, index) => {
-                if (html.indexOf(el, indexOfsection) !== -1 && html.indexOf(el, indexOfsection) < indexOfClosedBra) {
-                    let toReplace = '@renderSection("' + el + '")';
-                    resultHtml = resultHtml.replace(toReplace, sectionsContent[index]);
-                }
-            });
-        }
-        nextIndex = indexOfsection + 1; // Evalute for next search of @renderSection
-    }
-    // IV. Separate keys: keyName[0] is relevant to keyValue[0]
+    // II. Separate keys: keyName[0] is relevant to keyValue[0]
     let keyName = [], // (Left part :) Ex -> title:Telerik Academy
         keyValue = []; // Values can be string, boolean or array, (: Right part)
     keys.forEach((el, index) => {
@@ -111,9 +78,58 @@ function solve(arrInput) {
             }
         }
     });
-    // V. Render non-condition and non-loop statements
-    
-    console.log(keyName);
-    console.log(keyValue);
-    return resultHtml;
+    // III. Separate sections: sectionsName[0] is relevant to sectionsContent = [0]
+    let sectionsName = [],
+        sectionsContent = [],
+        currSectionContent = [];
+    sections.forEach((el, index) => {
+        let indexInEl = el.indexOf('@section ');
+        if (indexInEl !== -1) {
+            let name = el.slice('@section '.length, el.length - 2)
+            sectionsName.push('renderSection("' + name + '")');
+        } else if (el.indexOf('}') === -1) {
+            currSectionContent.push(el);
+        } else {
+            sectionsContent.push(currSectionContent.join(''));
+            currSectionContent = [];
+        }
+    });
+    // Concat the two arrays of names relevant to two arrays of values
+    let inputNames = sectionsName.concat(keyName),
+        inputValues = sectionsContent.concat(keyValue);
+    html = renderNonCommands(html);
+    function renderNonCommands(htmlInput) {
+        let resultHtml = htmlInput,
+            start = 0,
+            indexOfforeach,
+            indexOfif,
+            statementIndex = 0, // Index of first occurrence @if or @foreach
+            indexClosedCurly;
+        while (resultHtml.indexOf('@if', start) !== -1 || resultHtml.indexOf('@foreach', start) !== -1) {
+            indexOfif = resultHtml.indexOf('@if', start);
+            indexOfforeach = resultHtml.indexOf('@foreach', start);
+            if (indexOfif >= 0 && indexOfforeach >= 0) {
+                indexOfif > indexOfforeach ? statementIndex = indexOfforeach : statementIndex = indexOfif;
+                indexClosedCurly = resultHtml.indexOf('}', statementIndex);
+                start = indexClosedCurly;
+            } else {
+                indexOfif >= 0 ? statementIndex = indexOfif : statementIndex = indexOfforeach;
+                indexClosedCurly = resultHtml.indexOf('}', statementIndex);
+                start = indexClosedCurly;
+            }
+            console.log(statementIndex);
+            console.log(indexClosedCurly);
+        }
+        if (resultHtml.indexOf('@if', start) == -1 && resultHtml.indexOf('@foreach', start) == -1) {
+            for (let i = 0; i < inputNames.length; i++) {
+                while (resultHtml.indexOf('@' + inputNames[i]) !== -1) {
+                    resultHtml = resultHtml.replace('@' + inputNames[i], inputValues[i]);
+                }
+            }
+        }
+        return resultHtml;
+    }
+    console.log(inputNames);
+    console.log(inputValues);
+    return html;
 }
