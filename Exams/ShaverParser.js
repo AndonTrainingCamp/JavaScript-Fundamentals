@@ -110,22 +110,55 @@ function solve(arrInput) {
         }
         while (resultHtml.indexOf('@if') !== -1) {
             for (let i = 0; i < inputNames.length; i++) {
-                let indexOfIfParam = resultHtml.indexOf('(' + inputNames[i] + ')');
-                if (indexOfIfParam !== -1 && indexOfIfParam < resultHtml.indexOf('{')) {
-                    if (inputValues[i]) {
-                        
-                    } else {
-
-                    }
+                let indexOfIfParam = resultHtml.indexOf('(' + inputNames[i] + ')', resultHtml.indexOf('@if'));
+                if (indexOfIfParam !== -1 && indexOfIfParam < resultHtml.indexOf('{', resultHtml.indexOf('@if'))) {
+                    resultHtml = renderIf(resultHtml, resultHtml.indexOf('@if'), resultHtml.indexOf('}', resultHtml.indexOf('@if')), inputValues[i]);
                 }
             }
         }
-        // while (resultHtml.indexOf('@foreach') !== -1) {
-
-        // }
+        //while (resultHtml.indexOf('@foreach') !== -1) {
+            resultHtml = renderForeach(resultHtml, resultHtml.indexOf('@foreach'), resultHtml.indexOf('}', resultHtml.indexOf('@foreach')));
+        //}
         return resultHtml;
     }
-    console.log(inputNames);
-    console.log(inputValues);
+    function renderIf(inputHtml, startState, endState, ifParam) {
+        let part1 = inputHtml.slice(0, startState),
+            part2 = inputHtml.slice(startState, endState + 1),
+            part3 = inputHtml.slice(endState + 1);
+        let newHtml;
+        if (ifParam) {
+            part2 = part2.slice(part2.indexOf('{') + 1, part2.indexOf('}'));
+        } else {
+            part2 = '';
+        }
+        newHtml = part1 + part2 + part3;
+        return newHtml;
+    }
+    function renderForeach(inputHtml, startState, endState) {
+        let part1 = inputHtml.slice(0, startState),
+            part2 = inputHtml.slice(startState, endState + 1),
+            part3 = inputHtml.slice(endState + 1);
+        let newHtml;
+        let elName = part2.slice(part2.indexOf('(var ') + 5, part2.indexOf(' in')),
+            arrayName = part2.slice(part2.indexOf('(var ' + elName + ' in ') + ('(var ' + elName + ' in ').length, part2.indexOf(')')),
+            indexArrayName;
+        inputNames.forEach((el, index) => {
+            if (el === arrayName) {
+                indexArrayName = index;
+            }
+        });
+        let part2AfterLoop = '';
+        part2 = part2.slice(part2.indexOf('{') + 1, part2.indexOf('}'));
+        let currPart = part2.concat();
+        for (let i = 0; i < inputValues[indexArrayName].length; i++) {
+            while (part2.indexOf('@' + elName) !== -1) {
+                part2 = part2.replace('@' + elName, inputValues[indexArrayName][i]);
+            }
+            part2AfterLoop = part2AfterLoop.concat(part2);
+            part2 = currPart.concat();
+        }
+        newHtml = part1 + part2AfterLoop + part3;
+        return newHtml;
+    }
     return html;
 }
