@@ -97,36 +97,32 @@ function solve(arrInput) {
     // Concat the two arrays of names relevant to two arrays of values
     let inputNames = sectionsName.concat(keyName),
         inputValues = sectionsContent.concat(keyValue);
-    html = renderNonCommands(html);
-    function renderNonCommands(htmlInput) {
-        let resultHtml = htmlInput,
-            start = 0,
-            indexOfforeach,
-            indexOfif,
-            statementIndex = 0, // Index of first occurrence @if or @foreach
-            indexClosedCurly;
-        while (resultHtml.indexOf('@if', start) !== -1 || resultHtml.indexOf('@foreach', start) !== -1) {
-            indexOfif = resultHtml.indexOf('@if', start);
-            indexOfforeach = resultHtml.indexOf('@foreach', start);
-            if (indexOfif >= 0 && indexOfforeach >= 0) {
-                indexOfif > indexOfforeach ? statementIndex = indexOfforeach : statementIndex = indexOfif;
-                indexClosedCurly = resultHtml.indexOf('}', statementIndex);
-                start = indexClosedCurly;
-            } else {
-                indexOfif >= 0 ? statementIndex = indexOfif : statementIndex = indexOfforeach;
-                indexClosedCurly = resultHtml.indexOf('}', statementIndex);
-                start = indexClosedCurly;
-            }
-            console.log(statementIndex);
-            console.log(indexClosedCurly);
+    html = renderHtml(html);
+    function renderHtml(htmlInput) {
+        let resultHtml = htmlInput;
+        while (resultHtml.indexOf('@@') !== -1) {
+            resultHtml = resultHtml.replace('@@', '@');
         }
-        if (resultHtml.indexOf('@if', start) == -1 && resultHtml.indexOf('@foreach', start) == -1) {
+        for (let i = 0; i < inputNames.length; i++) {
+            while (resultHtml.indexOf('@' + inputNames[i]) !== -1) {
+                resultHtml = resultHtml.replace('@' + inputNames[i], inputValues[i]);
+            }
+        }
+        while (resultHtml.indexOf('@if') !== -1) {
             for (let i = 0; i < inputNames.length; i++) {
-                while (resultHtml.indexOf('@' + inputNames[i]) !== -1) {
-                    resultHtml = resultHtml.replace('@' + inputNames[i], inputValues[i]);
+                let indexOfIfParam = resultHtml.indexOf('(' + inputNames[i] + ')');
+                if (indexOfIfParam !== -1 && indexOfIfParam < resultHtml.indexOf('{')) {
+                    if (inputValues[i]) {
+                        
+                    } else {
+
+                    }
                 }
             }
         }
+        // while (resultHtml.indexOf('@foreach') !== -1) {
+
+        // }
         return resultHtml;
     }
     console.log(inputNames);
