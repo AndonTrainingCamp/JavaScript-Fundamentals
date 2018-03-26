@@ -116,9 +116,9 @@ function solve(arrInput) {
                 }
             }
         }
-        //while (resultHtml.indexOf('@foreach') !== -1) {
+        while (resultHtml.indexOf('@foreach') !== -1) {
             resultHtml = renderForeach(resultHtml, resultHtml.indexOf('@foreach'), resultHtml.indexOf('}', resultHtml.indexOf('@foreach')));
-        //}
+        }
         return resultHtml;
     }
     function renderIf(inputHtml, startState, endState, ifParam) {
