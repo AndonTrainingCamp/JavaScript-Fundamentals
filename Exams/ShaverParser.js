@@ -3,7 +3,7 @@
 'use strict';
 
 let fs = require("fs"),
-    text = fs.readFileSync("./inputShaver.txt", "utf-8"),
+    text = fs.readFileSync("./inputShaver8.txt", "utf-8"),
     arrInput = [];
 if (text.indexOf('\r\n') !== -1) {
     arrInput = text.split("\r\n");
@@ -21,12 +21,19 @@ function solve(arrInput) {
     for (let i = 0; i < keysNum; i++) {
         keys[i] = arrInput[i + 1];
     }
-    let htmlStartIndex;
-    arrInput.forEach((element, index) => {
-        if (element.toLowerCase() === '<!DOCTYPE html>'.toLowerCase()) {
-            htmlStartIndex = index;
+    let htmlStartIndex,
+        indexLastSection;
+    for (let i = keysNum + 2; i < arrInput.length; i++) {
+        if (arrInput[i].indexOf('@section') !== -1) {
+            indexLastSection = i;
         }
-    });
+    }
+    for (let i = indexLastSection; i < arrInput.length; i++) {
+        if (arrInput[i].indexOf('}') !== -1) {
+            htmlStartIndex = i + 1;
+            break;
+        }
+    }
     for (let i = 0, j = 2 + keysNum; i < htmlStartIndex - keysNum - 2; i++ , j++) {
         sections[i] = arrInput[j];
     }
@@ -97,18 +104,20 @@ function solve(arrInput) {
     // Concat the two arrays of names relevant to two arrays of values
     let inputNames = sectionsName.concat(keyName),
         inputValues = sectionsContent.concat(keyValue);
+    console.log(inputNames);
+    console.log(inputValues);
     html = renderHtml(html);
+    // Main render function
     function renderHtml(htmlInput) {
         let resultHtml = htmlInput;
-        while (resultHtml.indexOf('@@') !== -1) {
-            resultHtml = resultHtml.replace('@@', '@');
-        }
+        // Render non-@if and non-@foreach statements
         for (let i = 0; i < inputNames.length; i++) {
-            while (resultHtml.indexOf('@' + inputNames[i]) !== -1) {
+            while (resultHtml.indexOf('@' + inputNames[i]) !== -1 && resultHtml.indexOf('@' + inputNames[i]) - 1 !== '@') {
                 resultHtml = resultHtml.replace('@' + inputNames[i], inputValues[i]);
             }
         }
-        while (resultHtml.indexOf('@if') !== -1) {
+        // Render @if, @foreach statements and '@@'
+        while (resultHtml.indexOf('@if') !== -1 && resultHtml.indexOf('@if') - 1 !== '@') {
             for (let i = 0; i < inputNames.length; i++) {
                 let indexOfIfParam = resultHtml.indexOf('(' + inputNames[i] + ')', resultHtml.indexOf('@if'));
                 if (indexOfIfParam !== -1 && indexOfIfParam < resultHtml.indexOf('{', resultHtml.indexOf('@if'))) {
@@ -116,11 +125,15 @@ function solve(arrInput) {
                 }
             }
         }
-        while (resultHtml.indexOf('@foreach') !== -1) {
+        while (resultHtml.indexOf('@foreach') !== -1 && resultHtml.indexOf('@foreach') !== '@') {
             resultHtml = renderForeach(resultHtml, resultHtml.indexOf('@foreach'), resultHtml.indexOf('}', resultHtml.indexOf('@foreach')));
+        }
+        while (resultHtml.indexOf('@@') !== -1) {
+            resultHtml = resultHtml.replace('@@', '@');
         }
         return resultHtml;
     }
+    // Render function for @if
     function renderIf(inputHtml, startState, endState, ifParam) {
         let part1 = inputHtml.slice(0, startState),
             part2 = inputHtml.slice(startState, endState + 1),
@@ -134,6 +147,7 @@ function solve(arrInput) {
         newHtml = part1 + part2 + part3;
         return newHtml;
     }
+    // Render function for @foreach
     function renderForeach(inputHtml, startState, endState) {
         let part1 = inputHtml.slice(0, startState),
             part2 = inputHtml.slice(startState, endState + 1),
