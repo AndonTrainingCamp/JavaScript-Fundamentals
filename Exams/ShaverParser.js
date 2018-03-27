@@ -114,10 +114,12 @@ function solve(arrInput) {
         // Render non-@if and non-@foreach statements
         for (let i = 0; i < inputNames.length; i++) {
             while (resultHtml.indexOf('@' + inputNames[i], nextIndex) !== -1) {
-                if (resultHtml[resultHtml.indexOf('@' + inputNames[i], nextIndex) - 1] !== '@') {
+                if (resultHtml[resultHtml.indexOf('@' + inputNames[i], nextIndex) - 1] === '@') {
+                    nextIndex = resultHtml.indexOf('@' + inputNames[i], nextIndex) + 1;
+                } else {
                     resultHtml = renderAt(resultHtml, inputNames[i], inputValues[i], resultHtml.indexOf('@' + inputNames[i], nextIndex));
+                    nextIndex = 0;
                 }
-                nextIndex = resultHtml.indexOf('@' + inputNames[i], nextIndex) + 1;
             }
         }
         nextIndex = 0;
@@ -182,7 +184,6 @@ function solve(arrInput) {
                 indexArrayName = index;
             }
         });
-        console.log(arrayName + ' <-----');
         let part2AfterLoop = '';
         part2 = part2.slice(part2.indexOf('{') + 1, part2.indexOf('}'));
         let currPart = part2.concat();
