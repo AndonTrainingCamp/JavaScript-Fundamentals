@@ -109,29 +109,50 @@ function solve(arrInput) {
     html = renderHtml(html);
     // Main render function
     function renderHtml(htmlInput) {
-        let resultHtml = htmlInput;
+        let resultHtml = htmlInput,
+            nextIndex = 0;
         // Render non-@if and non-@foreach statements
         for (let i = 0; i < inputNames.length; i++) {
-            while (resultHtml.indexOf('@' + inputNames[i]) !== -1 && resultHtml.indexOf('@' + inputNames[i]) - 1 !== '@') {
-                resultHtml = resultHtml.replace('@' + inputNames[i], inputValues[i]);
+            while (resultHtml.indexOf('@' + inputNames[i], nextIndex) !== -1) {
+                if (resultHtml[resultHtml.indexOf('@' + inputNames[i], nextIndex) - 1] !== '@') {
+                    resultHtml = renderAt(resultHtml, inputNames[i], inputValues[i], resultHtml.indexOf('@' + inputNames[i], nextIndex));
+                }
+                nextIndex = resultHtml.indexOf('@' + inputNames[i], nextIndex) + 1;
             }
         }
+        nextIndex = 0;
         // Render @if, @foreach statements and '@@'
-        while (resultHtml.indexOf('@if') !== -1 && resultHtml.indexOf('@if') - 1 !== '@') {
-            for (let i = 0; i < inputNames.length; i++) {
-                let indexOfIfParam = resultHtml.indexOf('(' + inputNames[i] + ')', resultHtml.indexOf('@if'));
-                if (indexOfIfParam !== -1 && indexOfIfParam < resultHtml.indexOf('{', resultHtml.indexOf('@if'))) {
-                    resultHtml = renderIf(resultHtml, resultHtml.indexOf('@if'), resultHtml.indexOf('}', resultHtml.indexOf('@if')), inputValues[i]);
+        while (resultHtml.indexOf('@if', nextIndex) !== -1) {
+            if (resultHtml[resultHtml.indexOf('@if', nextIndex) - 1] !== '@') {
+                for (let i = 0; i < inputNames.length; i++) {
+                    let indexOfIfParam = resultHtml.indexOf('(' + inputNames[i] + ')', resultHtml.indexOf('@if', nextIndex));
+                    if (indexOfIfParam !== -1 && indexOfIfParam < resultHtml.indexOf('{', resultHtml.indexOf('@if', nextIndex))) {
+                        resultHtml = renderIf(resultHtml, resultHtml.indexOf('@if'), resultHtml.indexOf('}', resultHtml.indexOf('@if')), inputValues[i]);
+                    }
                 }
             }
+            nextIndex = resultHtml.indexOf('@if', nextIndex) + 1;
         }
-        while (resultHtml.indexOf('@foreach') !== -1 && resultHtml.indexOf('@foreach') !== '@') {
-            resultHtml = renderForeach(resultHtml, resultHtml.indexOf('@foreach'), resultHtml.indexOf('}', resultHtml.indexOf('@foreach')));
+        // Render @foreach statement
+        nextIndex = 0;
+        while (resultHtml.indexOf('@foreach', nextIndex) !== -1) {
+            if (resultHtml[resultHtml.indexOf('@foreach', nextIndex) - 1] !== '@') {
+                resultHtml = renderForeach(resultHtml, resultHtml.indexOf('@foreach', nextIndex), resultHtml.indexOf('}', resultHtml.indexOf('@foreach', nextIndex)));
+            }
+            nextIndex = resultHtml.indexOf('@foreach', nextIndex) + 1;
         }
+        // Change escaped '@@' to '@'
         while (resultHtml.indexOf('@@') !== -1) {
             resultHtml = resultHtml.replace('@@', '@');
         }
         return resultHtml;
+    }
+    // Render function for '@'
+    function renderAt(inputHtml, name, value, index) {
+        let part1 = inputHtml.slice(0, index),
+            part2 = inputHtml.slice(index);
+        part2 = part2.replace('@' + name, value);
+        return part1 + part2;
     }
     // Render function for @if
     function renderIf(inputHtml, startState, endState, ifParam) {
@@ -161,6 +182,7 @@ function solve(arrInput) {
                 indexArrayName = index;
             }
         });
+        console.log(arrayName + ' <-----');
         let part2AfterLoop = '';
         part2 = part2.slice(part2.indexOf('{') + 1, part2.indexOf('}'));
         let currPart = part2.concat();
