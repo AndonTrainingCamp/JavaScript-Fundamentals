@@ -28,10 +28,14 @@ function solve(arrInput) {
             indexLastSection = i;
         }
     }
-    for (let i = indexLastSection; i < arrInput.length; i++) {
-        if (arrInput[i].indexOf('}') !== -1) {
-            htmlStartIndex = i + 1;
-            break;
+    if (indexLastSection === undefined) {
+        htmlStartIndex = keysNum + 2;
+    } else {
+        for (let i = indexLastSection; i < arrInput.length; i++) {
+            if (arrInput[i].indexOf('}') !== -1) {
+                htmlStartIndex = i + 1;
+                break;
+            }
         }
     }
     for (let i = 0, j = 2 + keysNum; i < htmlStartIndex - keysNum - 2; i++ , j++) {
@@ -129,19 +133,21 @@ function solve(arrInput) {
                 for (let i = 0; i < inputNames.length; i++) {
                     let indexOfIfParam = resultHtml.indexOf('(' + inputNames[i] + ')', resultHtml.indexOf('@if', nextIndex));
                     if (indexOfIfParam !== -1 && indexOfIfParam < resultHtml.indexOf('{', resultHtml.indexOf('@if', nextIndex))) {
-                        resultHtml = renderIf(resultHtml, resultHtml.indexOf('@if'), resultHtml.indexOf('}', resultHtml.indexOf('@if')), inputValues[i]);
+                        resultHtml = renderIf(resultHtml, resultHtml.indexOf('@if', nextIndex), resultHtml.indexOf('}', resultHtml.indexOf('@if', nextIndex)), inputValues[i]);
                     }
                 }
+            } else {
+                nextIndex = resultHtml.indexOf('@if', nextIndex) + 1;
             }
-            nextIndex = resultHtml.indexOf('@if', nextIndex) + 1;
         }
         // Render @foreach statement
         nextIndex = 0;
         while (resultHtml.indexOf('@foreach', nextIndex) !== -1) {
             if (resultHtml[resultHtml.indexOf('@foreach', nextIndex) - 1] !== '@') {
                 resultHtml = renderForeach(resultHtml, resultHtml.indexOf('@foreach', nextIndex), resultHtml.indexOf('}', resultHtml.indexOf('@foreach', nextIndex)));
+            } else {
+                nextIndex = resultHtml.indexOf('@foreach', nextIndex) + 1;
             }
-            nextIndex = resultHtml.indexOf('@foreach', nextIndex) + 1;
         }
         // Change escaped '@@' to '@'
         while (resultHtml.indexOf('@@') !== -1) {
