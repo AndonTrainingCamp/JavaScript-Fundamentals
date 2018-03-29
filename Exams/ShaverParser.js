@@ -127,13 +127,16 @@ function solve(arrInput) {
             }
         }
         nextIndex = 0;
-        // Render @if, @foreach statements and '@@'
+        // Render @if
         while (resultHtml.indexOf('@if', nextIndex) !== -1) {
             if (resultHtml[resultHtml.indexOf('@if', nextIndex) - 1] !== '@') {
                 for (let i = 0; i < inputNames.length; i++) {
                     let indexOfIfParam = resultHtml.indexOf('(' + inputNames[i] + ')', resultHtml.indexOf('@if', nextIndex));
                     if (indexOfIfParam !== -1 && indexOfIfParam < resultHtml.indexOf('{', resultHtml.indexOf('@if', nextIndex))) {
                         resultHtml = renderIf(resultHtml, resultHtml.indexOf('@if', nextIndex), resultHtml.indexOf('}', resultHtml.indexOf('@if', nextIndex)), inputValues[i]);
+                    }
+                    if (resultHtml.indexOf('@if', nextIndex) === -1) {
+                        break;
                     }
                 }
             } else {
