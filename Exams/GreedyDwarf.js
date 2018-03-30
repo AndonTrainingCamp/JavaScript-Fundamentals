@@ -1,7 +1,7 @@
 /*jslint devel: true */
 /*jslint es6 */
 'use strict';
-
+// Uncompleted!
 let input = [
     '1, 3, -6, 7, 4, 1, 12',
     '3',
