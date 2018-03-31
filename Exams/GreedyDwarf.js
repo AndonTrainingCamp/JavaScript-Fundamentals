@@ -10,13 +10,13 @@ let input = [
     '1, -1'
 ];
 // Expected output: 21
-solve(input);
+console.log(solve(input));
 
 function solve(inputData) {
     let valley = [],
         patterns = [];
     makeInputData(inputData);
-    walkInTheValley(valley, patterns);
+    return walkInTheValley(valley, patterns);
     function makeInputData(data) {
         valley = data[0].match(/[\-]?\d+/g);
         for (let i = 0; i < valley.length; i++) {
@@ -38,7 +38,8 @@ function solve(inputData) {
             currPosition = 0,
             positionHistory = [],
             samePosition = false,
-            goDwarf = true;
+            goDwarf = true,
+            maxSum;
         for (let i = 0; i < patternsArr.length; i++) {
             positionHistory.push(0);
             while (goDwarf) {
@@ -69,10 +70,9 @@ function solve(inputData) {
             samePosition = false;
             goDwarf = true;
         }
-        let result = allSums.reduce(function(a, b) {
+        maxSum = allSums.reduce(function(a, b) {
             return Math.max(a, b);
         });
-        console.log(result);
-        return result;
+        return maxSum;
     }
 }
